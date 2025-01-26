@@ -1,0 +1,26 @@
+[
+  {
+    "model": "todo.task",
+    "pk": "436f9d9a-3295-461b-bee5-2eac0b0e9610",
+    "fields": {
+      "title": "Homework 1",
+      "description": "Math exercises"
+    }
+  },
+  {
+    "model": "todo.task",
+    "pk": "6a79cdde-f9e4-4227-a1f5-e38dd9a28df6",
+    "fields": {
+      "title": "Homework 2",
+      "description": "English exercises"
+    }
+  },
+  {
+    "model": "todo.task",
+    "pk": "9cc46ccd-f1d2-4860-bf28-e32b4851ca5c",
+    "fields": {
+      "title": "Homework 3",
+      "description": "Home exercises"
+    }
+  }
+]
