@@ -81,6 +81,7 @@
 <script>
     const BASE_URL = "http://localhost:8000/api/v1/"; // Update with your API URL
 
+    // Function to fetch CSRF token
     async function fetchCSRFToken() {
         try {
             const response = await fetch(`${BASE_URL}csrf/`, {credentials: 'include'});
@@ -96,41 +97,50 @@
         }
     }
 
+    // Function to fetch categories
     async function fetchCategories() {
         try {
             const response = await fetch(`${BASE_URL}categories/`);
-            const categories = await response.json();
-            const categorySelect = document.getElementById('taskCategory');
-
-            categories.forEach(category => {
-                const option = document.createElement('option');
-                option.value = category.id;
-                option.textContent = category.name;
-                categorySelect.appendChild(option);
-            });
+            if (response.ok) {
+                const categories = await response.json();
+                const categorySelect = document.getElementById('taskCategory');
+                categories.forEach(category => {
+                    const option = document.createElement('option');
+                    option.value = category.id;
+                    option.textContent = category.name;
+                    categorySelect.appendChild(option);
+                });
+            } else {
+                console.error('Error fetching categories:', await response.text());
+            }
         } catch (error) {
             console.error('Error fetching categories:', error);
         }
     }
 
+    // Function to fetch tasks
     async function fetchTasks() {
         try {
             const response = await fetch(`${BASE_URL}tasks/`);
-            const tasks = await response.json();
-            const taskList = document.getElementById('taskList');
-
-            taskList.innerHTML = '';
-            tasks.forEach(task => {
-                const taskDiv = document.createElement('div');
-                taskDiv.className = 'task';
-                taskDiv.innerHTML = `<h2>${task.title}</h2><p>${task.description}</p><p>Category: ${task.category?.name || 'N/A'}</p>`;
-                taskList.appendChild(taskDiv);
-            });
+            if (response.ok) {
+                const tasks = await response.json();
+                const taskList = document.getElementById('taskList');
+                taskList.innerHTML = ''; // Clear current task list
+                tasks.forEach(task => {
+                    const taskDiv = document.createElement('div');
+                    taskDiv.className = 'task';
+                    taskDiv.innerHTML = `<h2>${task.title}</h2><p>${task.description}</p><p>Category: ${task.category_name || 'N/A'}</p>`;
+                    taskList.appendChild(taskDiv);
+                });
+            } else {
+                console.error('Error fetching tasks:', await response.text());
+            }
         } catch (error) {
             console.error('Error fetching tasks:', error);
         }
     }
 
+    // Function to add a new task
     async function addTask() {
         const title = document.getElementById('taskTitle').value;
         const description = document.getElementById('taskDescription').value;
@@ -162,7 +172,7 @@
                 document.getElementById('taskTitle').value = '';
                 document.getElementById('taskDescription').value = '';
                 document.getElementById('taskCategory').value = '';
-                fetchTasks();
+                fetchTasks(); // Fetch the updated task list
             } else {
                 console.error('Error adding task:', await response.text());
             }
