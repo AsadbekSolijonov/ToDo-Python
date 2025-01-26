@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Todo App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        input, select, button, textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        .task {
+            background: #f9f9f9;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .task h2 {
+            margin: 0 0 5px 0;
+            color: #007bff;
+        }
+
+        .task p {
+            margin: 0;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Todo App</h1>
+    <input type="text" id="taskTitle" placeholder="Task Title">
+    <textarea id="taskDescription" placeholder="Task Description"></textarea>
+    <select id="taskCategory">
+        <option value="">Select Category</option>
+    </select>
+    <button onclick="addTask()">Add Task</button>
+
+    <div id="taskList"></div>
+</div>
+
+<script>
+    const BASE_URL = "http://localhost:8000/api/v1/"; // Update with your API URL
+
+    async function fetchCSRFToken() {
+        try {
+            const response = await fetch(`${BASE_URL}csrf/`, {credentials: 'include'});
+            if (response.ok) {
+                return response.headers.get('X-CSRFToken');
+            } else {
+                console.error('Failed to fetch CSRF token:', await response.text());
+                return null;
+            }
+        } catch (error) {
+            console.error('Error fetching CSRF token:', error);
+            return null;
+        }
+    }
+
+    async function fetchCategories() {
+        try {
+            const response = await fetch(`${BASE_URL}categories/`);
+            const categories = await response.json();
+            const categorySelect = document.getElementById('taskCategory');
+
+            categories.forEach(category => {
+                const option = document.createElement('option');
+                option.value = category.id;
+                option.textContent = category.name;
+                categorySelect.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Error fetching categories:', error);
+        }
+    }
+
+    async function fetchTasks() {
+        try {
+            const response = await fetch(`${BASE_URL}tasks/`);
+            const tasks = await response.json();
+            const taskList = document.getElementById('taskList');
+
+            taskList.innerHTML = '';
+            tasks.forEach(task => {
+                const taskDiv = document.createElement('div');
+                taskDiv.className = 'task';
+                taskDiv.innerHTML = `<h2>${task.title}</h2><p>${task.description}</p><p>Category: ${task.category?.name || 'N/A'}</p>`;
+                taskList.appendChild(taskDiv);
+            });
+        } catch (error) {
+            console.error('Error fetching tasks:', error);
+        }
+    }
+
+    async function addTask() {
+        const title = document.getElementById('taskTitle').value;
+        const description = document.getElementById('taskDescription').value;
+        const category = document.getElementById('taskCategory').value;
+
+        if (!title || !description || !category) {
+            alert('Please provide a task title, description, and select a category.');
+            return;
+        }
+
+        const csrfToken = await fetchCSRFToken();
+        if (!csrfToken) {
+            alert('CSRF token could not be retrieved.');
+            return;
+        }
+
+        try {
+            const response = await fetch(`${BASE_URL}tasks/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken,
+                },
+                credentials: 'include',
+                body: JSON.stringify({title, description, category}),
+            });
+
+            if (response.ok) {
+                document.getElementById('taskTitle').value = '';
+                document.getElementById('taskDescription').value = '';
+                document.getElementById('taskCategory').value = '';
+                fetchTasks();
+            } else {
+                console.error('Error adding task:', await response.text());
+            }
+        } catch (error) {
+            console.error('Error adding task:', error);
+        }
+    }
+
+    // Initial data fetch
+    fetchCategories();
+    fetchTasks();
+</script>
+
+</body>
+</html>
