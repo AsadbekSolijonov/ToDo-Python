@@ -9,7 +9,7 @@ class TaskSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Task
-        fields = ['id', 'title', 'description', 'category', 'category_name']
+        fields = ['id', 'title', 'description', 'category', 'status', 'category_name']
         read_only_fields = ('id',)
 
     def get_category_name(self, obj):
