@@ -1,6 +1,9 @@
 from django.shortcuts import render
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework import status
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
@@ -12,6 +15,11 @@ from todo.serializers import TaskSerializer, CategorySerializer
 class TaskViewSet(ModelViewSet):  # CRUD
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
+    permission_classes = [IsAuthenticated, ]
+    authentication_classes = [TokenAuthentication, ]
+    filter_backends = [SearchFilter, OrderingFilter]
+    search_fields = ['title', 'description', 'category__name']
+    ordering_fields = ['title', 'description', 'category__name']
 
     @action(detail=True, methods=['GET', 'PATCH'])
     def edit_status_true(self, request, pk=None):
@@ -58,10 +66,22 @@ class TaskViewSet(ModelViewSet):  # CRUD
         tasks = Task.objects.filter(id__in=task_ids).update(status=task_status)
         return Response({"message": f"{tasks} tasks are updated succesfully!"}, status=status.HTTP_200_OK)
 
+    @action(detail=False, methods=['PATCH'])
+    def change_status(self, request, *args, **kwargs):
+        BOOL_STATUS = ['True', 'False']
+        task_status = request.query_params.get('all_status')
+        task_status = task_status.capitalize()
+        if task_status in BOOL_STATUS:
+            tasks = Task.objects.all().update(status=task_status)
+            return Response({"message": f"{tasks} task status successfully updated!"}, status=status.HTTP_200_OK)
+        return Response({'detail': "write bool status in params"}, status=status.HTTP_400_BAD_REQUEST)
+
 
 class CategoryViewSet(ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    permission_classes = [IsAuthenticated, ]
+    authentication_classes = [TokenAuthentication, ]
 
 
 def home(request):
