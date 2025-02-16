@@ -1,10 +1,63 @@
 [
   {
+    "model": "todo.category",
+    "pk": "0eab87a0-efed-48cb-84c7-6238166ee202",
+    "fields": {
+      "name": "One fit"
+    }
+  },
+  {
+    "model": "todo.category",
+    "pk": "0ee9a0fc-28bd-44ec-881b-4fca4acb4929",
+    "fields": {
+      "name": "School"
+    }
+  },
+  {
+    "model": "todo.category",
+    "pk": "2a200dde-5f06-49eb-98d9-c46931bb90b3",
+    "fields": {
+      "name": "Mars IT school"
+    }
+  },
+  {
+    "model": "todo.category",
+    "pk": "5765720e-4ea7-4cc2-92f3-99b1b3980a7c",
+    "fields": {
+      "name": "Sport"
+    }
+  },
+  {
+    "model": "todo.task",
+    "pk": "14b841fc-2aaa-42f8-8e5f-03a508f47760",
+    "fields": {
+      "title": "Shari",
+      "description": "Pupil",
+      "category": "5765720e-4ea7-4cc2-92f3-99b1b3980a7c",
+      "status": true,
+      "user_id": "3c8c2c92-a510-4a84-b63f-6c515ceaee61"
+    }
+  },
+  {
+    "model": "todo.task",
+    "pk": "2de94c44-0e54-4f63-8882-e050879a5b61",
+    "fields": {
+      "title": "Homework 444",
+      "description": "History exercises",
+      "category": "0ee9a0fc-28bd-44ec-881b-4fca4acb4929",
+      "status": false,
+      "user_id": "3c8c2c92-a510-4a84-b63f-6c515ceaee61"
+    }
+  },
+  {
     "model": "todo.task",
     "pk": "436f9d9a-3295-461b-bee5-2eac0b0e9610",
     "fields": {
       "title": "Homework 1",
-      "description": "Math exercises"
+      "description": "Math exercises",
+      "category": "0ee9a0fc-28bd-44ec-881b-4fca4acb4929",
+      "status": true,
+      "user_id": "3c8c2c92-a510-4a84-b63f-6c515ceaee61"
     }
   },
   {
@@ -12,7 +65,21 @@
     "pk": "6a79cdde-f9e4-4227-a1f5-e38dd9a28df6",
     "fields": {
       "title": "Homework 2",
-      "description": "English exercises"
+      "description": "English exercises",
+      "category": "0ee9a0fc-28bd-44ec-881b-4fca4acb4929",
+      "status": false,
+      "user_id": "3c8c2c92-a510-4a84-b63f-6c515ceaee61"
+    }
+  },
+  {
+    "model": "todo.task",
+    "pk": "7f51399f-a8c9-4de6-8168-8309c8a0cca2",
+    "fields": {
+      "title": "as",
+      "description": "asa",
+      "category": "2a200dde-5f06-49eb-98d9-c46931bb90b3",
+      "status": false,
+      "user_id": "3c8c2c92-a510-4a84-b63f-6c515ceaee61"
     }
   },
   {
@@ -20,7 +87,32 @@
     "pk": "9cc46ccd-f1d2-4860-bf28-e32b4851ca5c",
     "fields": {
       "title": "Homework 3",
-      "description": "Home exercises"
+      "description": "Home exercises",
+      "category": "0ee9a0fc-28bd-44ec-881b-4fca4acb4929",
+      "status": true,
+      "user_id": "3c8c2c92-a510-4a84-b63f-6c515ceaee61"
+    }
+  },
+  {
+    "model": "todo.task",
+    "pk": "b0d7522d-4a8f-45a7-8968-328eee183c5d",
+    "fields": {
+      "title": "Blogs",
+      "description": "Blogs app ni yaratish",
+      "category": "2a200dde-5f06-49eb-98d9-c46931bb90b3",
+      "status": true,
+      "user_id": "3c8c2c92-a510-4a84-b63f-6c515ceaee61"
+    }
+  },
+  {
+    "model": "todo.task",
+    "pk": "e6bd0734-6341-485c-a19b-fd291514d7c2",
+    "fields": {
+      "title": "Todo app",
+      "description": "Django Rest Frameworkda ToDo app loyihasini yasash.  Githabdan olgan o'sha.",
+      "category": "2a200dde-5f06-49eb-98d9-c46931bb90b3",
+      "status": false,
+      "user_id": "3c8c2c92-a510-4a84-b63f-6c515ceaee61"
     }
   }
 ]

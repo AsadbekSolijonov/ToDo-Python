@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "django_filters",
 ]
+AUTH_USER_MODEL = 'todo.CustomUser'
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',

@@ -84,5 +84,6 @@ class CategoryViewSet(ModelViewSet):
     authentication_classes = [TokenAuthentication, ]
 
 
+
 def home(request):
     return render(request, 'index.html')
