@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from rest_framework.authentication import TokenAuthentication
+from rest_framework.authentication import BasicAuthentication, SessionAuthentication
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework import status
 from rest_framework.decorators import action
@@ -7,8 +7,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
-from todo.models import Task, Category
-from todo.serializers import TaskSerializer, CategorySerializer
+from todo.models import Task, Category, CustomUser, Profile
+from todo.serializers import TaskSerializer, CategorySerializer, CustomUserSerializer, ProfileSerializer
 
 
 # Create your views here.
@@ -16,7 +16,6 @@ class TaskViewSet(ModelViewSet):  # CRUD
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
     permission_classes = [IsAuthenticated, ]
-    authentication_classes = [TokenAuthentication, ]
     filter_backends = [SearchFilter, OrderingFilter]
     search_fields = ['title', 'description', 'category__name']
     ordering_fields = ['title', 'description', 'category__name']
@@ -81,8 +80,18 @@ class CategoryViewSet(ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = [IsAuthenticated, ]
-    authentication_classes = [TokenAuthentication, ]
 
+
+class CostumUserViewSet(ModelViewSet):
+    queryset = CustomUser.objects.all()
+    serializer_class = CustomUserSerializer
+    permission_classes = [IsAuthenticated, ]
+
+
+class ProfileViewSet(ModelViewSet):
+    queryset = Profile.objects.all()
+    serializer_class = ProfileSerializer
+    permission_classes = [IsAuthenticated, ]
 
 
 def home(request):
