@@ -3,19 +3,23 @@ from rest_framework.authentication import BasicAuthentication, SessionAuthentica
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework import status
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.parsers import JSONParser
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, IsAdminUser, AllowAny
+from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
+from rest_framework.generics import CreateAPIView
 from rest_framework.viewsets import ModelViewSet
 
 from todo.models import Task, Category, CustomUser, Profile
-from todo.serializers import TaskSerializer, CategorySerializer, CustomUserSerializer, ProfileSerializer
+from todo.permissions import IsOwnerOrSuperUser, IsTaskOwnerOrSuperUser
+from todo.serializers import TaskSerializer, CategorySerializer, CustomUserSerializer, ProfileSerializer, \
+    RegisterUserSerializer
 
 
-# Create your views here.
 class TaskViewSet(ModelViewSet):  # CRUD
     queryset = Task.objects.all()
     serializer_class = TaskSerializer
-    permission_classes = [IsAuthenticated, ]
+    permission_classes = [IsAuthenticated, IsTaskOwnerOrSuperUser]
     filter_backends = [SearchFilter, OrderingFilter]
     search_fields = ['title', 'description', 'category__name']
     ordering_fields = ['title', 'description', 'category__name']
@@ -77,21 +81,38 @@ class TaskViewSet(ModelViewSet):  # CRUD
 
 
 class CategoryViewSet(ModelViewSet):
-    queryset = Category.objects.all()
+    # queryset = Category.objects.all()
     serializer_class = CategorySerializer
-    permission_classes = [IsAuthenticated, ]
+    permission_classes = [IsAuthenticated, IsOwnerOrSuperUser]
+
+    def get_queryset(self):
+        return Category.objects.filter(user=self.request.user)
 
 
 class CostumUserViewSet(ModelViewSet):
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
-    permission_classes = [IsAuthenticated, ]
+    permission_classes = [IsAuthenticated, IsOwnerOrSuperUser]
+    # renderer_classes = [JSONRenderer, ]
 
 
 class ProfileViewSet(ModelViewSet):
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
-    permission_classes = [IsAuthenticated, ]
+    permission_classes = [IsAuthenticated, IsOwnerOrSuperUser]
+    # renderer_classes = [JSONRenderer, ]
+
+
+class RegisterUserAPIView(CreateAPIView):
+    queryset = CustomUser.objects.all()
+    serializer_class = RegisterUserSerializer
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "Foydalanuvchi muvofaqqiyatli yaratildi!"}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 def home(request):

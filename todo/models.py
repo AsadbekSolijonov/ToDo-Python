@@ -8,7 +8,10 @@ from core import settings
 
 class CustomUser(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
-    phone_number = models.CharField(max_length=9, unique=True, blank=True, null=True)
+    phone_number = models.CharField(max_length=9, unique=True)
+
+    USERNAME_FIELD = 'phone_number'
+    REQUIRED_FIELDS = []
 
     def __str__(self):
         return f"{self.username}"
@@ -24,6 +27,7 @@ class Profile(models.Model):
 class Category(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=100)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='categories')
 
     def __str__(self):
         return f"{self.name}"
@@ -35,7 +39,6 @@ class Task(models.Model):
     description = models.TextField()
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="tasks")
     status = models.BooleanField(default=False)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='tasks')
 
     def __str__(self):
         return f"{self.title}"
