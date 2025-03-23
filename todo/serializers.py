@@ -15,6 +15,14 @@ class TaskSerializer(serializers.ModelSerializer):
 
     # def get_category_name(self, obj):
     #     return obj.category.name
+    def validate_title(self, value):
+        if value.lower() in ['bad word']:
+            raise serializers.ValidationError('Bad word yozish mumkin emas!')
+        return value
+
+    def validate_description(self, value):
+        # logika
+        return value
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -35,6 +43,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
 class CustomUserSerializer(serializers.ModelSerializer):
     profile = ProfileSerializer(read_only=True)
+
     # categories = CategorySerializer(many=True, read_only=True)
 
     class Meta:

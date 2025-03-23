@@ -2,6 +2,7 @@ import uuid
 
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from todo.validators import CustomValidators
 
 from core import settings
 
@@ -35,10 +36,12 @@ class Category(models.Model):
 
 class Task(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4)
-    title = models.CharField(max_length=200)
-    description = models.TextField()
+    title = models.CharField(max_length=200, validators=[CustomValidators.text_minimal, CustomValidators.text_maximal])
+    description = models.TextField(validators=[CustomValidators.text_minimal, CustomValidators.text_maximal])
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="tasks")
     status = models.BooleanField(default=False)
+
+    # careated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{self.title}"

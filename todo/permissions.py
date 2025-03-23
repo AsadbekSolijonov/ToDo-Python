@@ -24,3 +24,8 @@ class IsTaskOwnerOrSuperUser(BasePermission):
         if request.user == obj.category.user or request.user.is_superuser:
             return True
         return False
+
+
+class SevenDays(BasePermission):
+    from datetime import datetime, timedelta
+    datetime.now() + timedelta(days=100)

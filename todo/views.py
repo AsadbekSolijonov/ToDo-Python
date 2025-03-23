@@ -3,9 +3,8 @@ from rest_framework.authentication import BasicAuthentication, SessionAuthentica
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework import status
 from rest_framework.decorators import action
-from rest_framework.parsers import JSONParser
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, IsAdminUser, AllowAny
-from rest_framework.renderers import JSONRenderer
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, IsAdminUser, AllowAny, \
+    DjangoModelPermissions
 from rest_framework.response import Response
 from rest_framework.generics import CreateAPIView
 from rest_framework.viewsets import ModelViewSet
@@ -14,6 +13,10 @@ from todo.models import Task, Category, CustomUser, Profile
 from todo.permissions import IsOwnerOrSuperUser, IsTaskOwnerOrSuperUser
 from todo.serializers import TaskSerializer, CategorySerializer, CustomUserSerializer, ProfileSerializer, \
     RegisterUserSerializer
+
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+from django.views.decorators.vary import vary_on_cookie, vary_on_headers
 
 
 class TaskViewSet(ModelViewSet):  # CRUD
@@ -88,18 +91,39 @@ class CategoryViewSet(ModelViewSet):
     def get_queryset(self):
         return Category.objects.filter(user=self.request.user)
 
+    @method_decorator(cache_page(60))  # 1 minut
+    @method_decorator(vary_on_cookie)
+    def dispatch(self, *args, **kwargs):  # list, create, retrieve
+        return super().dispatch(*args, **kwargs)
+
+    # @method_decorator(cache_page(60 * 60 * 2))  # 2 soat kesh
+    # @method_decorator(vary_on_cookie)
+    # def list(self, request, *args, **kwargs):
+    #     return super().list(request, *args, **kwargs)
+
+    # @method_decorator(cache_page(60 * 60 * 2))  # 2 soat kesh
+    # @method_decorator(vary_on_cookie)
+    # def create(self, request, *args, **kwargs):
+    #     return super().create(request, *args, **kwargs)
+
+    # @method_decorator(cache_page(60 * 60 * 2))  # 2 soat kesh
+    # @method_decorator(vary_on_cookie)
+    # def retrieve(self, request, *args, **kwargs):
+    #     return super().retrieve(request, *args, **kwargs)
+
 
 class CostumUserViewSet(ModelViewSet):
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
-    permission_classes = [IsAuthenticated, IsOwnerOrSuperUser]
+    permission_classes = [IsAuthenticated, DjangoModelPermissions]
+    # permission_classes = [DjangoModelPermissions, ]
     # renderer_classes = [JSONRenderer, ]
 
 
 class ProfileViewSet(ModelViewSet):
     queryset = Profile.objects.all()
     serializer_class = ProfileSerializer
-    permission_classes = [IsAuthenticated, IsOwnerOrSuperUser]
+    permission_classes = [IsAuthenticated, DjangoModelPermissions]
     # renderer_classes = [JSONRenderer, ]
 
 
