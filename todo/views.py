@@ -91,7 +91,7 @@ class CategoryViewSet(ModelViewSet):
     def get_queryset(self):
         return Category.objects.filter(user=self.request.user)
 
-    @method_decorator(cache_page(60))  # 1 minut
+    @method_decorator(cache_page(60 * 60 * 24))  # 1 kun
     @method_decorator(vary_on_cookie)
     def dispatch(self, *args, **kwargs):  # list, create, retrieve
         return super().dispatch(*args, **kwargs)
